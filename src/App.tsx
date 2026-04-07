@@ -4,6 +4,7 @@ import AuthButtons from './components/AuthButtons'
 import ProtectedRoute from './components/ProtectedRoute'
 import Home from './pages/Home'
 import PlotDetail from './pages/PlotDetail'
+import './App.css'
 
 function App() {
   const { isLoading } = useAuth0()
@@ -12,10 +13,12 @@ function App() {
 
   return (
     <div>
-      <nav>
-        <strong>My Plots</strong> | <AuthButtons />
+      <nav className="top-nav">
+        <span className="brand">My Plots</span>
+        <div className="auth-area">
+          <AuthButtons />
+        </div>
       </nav>
-      <hr />
       <Routes>
         <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
         <Route path="/plot/:id" element={<ProtectedRoute><PlotDetail /></ProtectedRoute>} />

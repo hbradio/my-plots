@@ -40,8 +40,10 @@ export default function PlotChart({
         label: 'Data Points',
         data: points.map((p) => ({ x: p.date, y: p.value })),
         showLine: false,
-        pointRadius: 5,
-        pointBackgroundColor: '#2563eb',
+        pointRadius: 6,
+        pointBackgroundColor: '#2d89ef',
+        pointBorderColor: '#2b5797',
+        pointBorderWidth: 2,
       },
     ]
 
@@ -53,26 +55,42 @@ export default function PlotChart({
           { x: refEndDate, y: refEndValue },
         ],
         showLine: true,
-        borderColor: '#dc2626',
-        borderDash: [5, 5],
-        pointRadius: 3,
-        pointBackgroundColor: '#dc2626',
+        borderColor: '#b91d47',
+        borderWidth: 2,
+        borderDash: [6, 4],
+        pointRadius: 4,
+        pointBackgroundColor: '#b91d47',
+        pointBorderColor: '#b91d47',
       })
     }
+
+    const fontFamily = "'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif"
 
     chartRef.current = new Chart(canvasRef.current, {
       type: 'scatter',
       data: { datasets },
       options: {
         responsive: true,
+        plugins: {
+          legend: {
+            labels: {
+              font: { family: fontFamily, weight: 'bold', size: 13 },
+              color: '#777',
+            },
+          },
+        },
         scales: {
           x: {
             type: 'time',
             time: { unit: 'day', tooltipFormat: 'yyyy-MM-dd' },
-            title: { display: true, text: 'Date' },
+            title: { display: true, text: 'Date', font: { family: fontFamily, weight: 'bold', size: 14 }, color: '#777' },
+            ticks: { font: { family: fontFamily, weight: 'bold', size: 12 }, color: '#999' },
+            grid: { color: '#eee' },
           },
           y: {
-            title: { display: true, text: yAxisLabel || 'Value' },
+            title: { display: true, text: yAxisLabel || 'Value', font: { family: fontFamily, weight: 'bold', size: 14 }, color: '#777' },
+            ticks: { font: { family: fontFamily, weight: 'bold', size: 12 }, color: '#999' },
+            grid: { color: '#eee' },
             ...(yMin != null ? { min: yMin } : {}),
             ...(yMax != null ? { max: yMax } : {}),
           },

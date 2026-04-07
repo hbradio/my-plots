@@ -31,7 +31,6 @@ export default function PlotDetail() {
   const [newDate, setNewDate] = useState('')
   const [newValue, setNewValue] = useState('')
 
-  // Settings form state
   const [settingsName, setSettingsName] = useState('')
   const [settingsYLabel, setSettingsYLabel] = useState('')
   const [settingsYMin, setSettingsYMin] = useState('')
@@ -106,7 +105,6 @@ export default function PlotDetail() {
       update.y_max = Number(settingsYMax)
     }
 
-    // Reference line: all 4 fields must be set, or clear all
     const hasRef = settingsRefStartDate && settingsRefStartValue !== '' && settingsRefEndDate && settingsRefEndValue !== ''
     if (!hasRef) {
       update.clear_ref = true
@@ -134,38 +132,45 @@ export default function PlotDetail() {
   const points = plot.points || []
 
   return (
-    <div>
-      <p><Link to="/">&larr; Back to plots</Link></p>
+    <div className="plot-detail">
+      <Link to="/" className="back-link">&larr; Back to plots</Link>
       <h1>{plot.name}</h1>
 
-      <PlotChart
-        points={points}
-        yAxisLabel={plot.y_axis_label}
-        yMin={plot.y_min}
-        yMax={plot.y_max}
-        refStartDate={plot.ref_start_date}
-        refStartValue={plot.ref_start_value}
-        refEndDate={plot.ref_end_date}
-        refEndValue={plot.ref_end_value}
-      />
+      <div className="chart-card">
+        <PlotChart
+          points={points}
+          yAxisLabel={plot.y_axis_label}
+          yMin={plot.y_min}
+          yMax={plot.y_max}
+          refStartDate={plot.ref_start_date}
+          refStartValue={plot.ref_start_value}
+          refEndDate={plot.ref_end_date}
+          refEndValue={plot.ref_end_value}
+        />
+      </div>
 
       <h2>Add Point</h2>
-      <form onSubmit={handleAddPoint}>
-        <input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)} required />
-        <input
-          type="number"
-          step="any"
-          placeholder="Value"
-          value={newValue}
-          onChange={(e) => setNewValue(e.target.value)}
-          required
-        />
+      <form onSubmit={handleAddPoint} className="add-point-form">
+        <div className="field">
+          <label>Date</label>
+          <input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)} required />
+        </div>
+        <div className="field">
+          <label>Value</label>
+          <input
+            type="number"
+            step="any"
+            placeholder="0"
+            value={newValue}
+            onChange={(e) => setNewValue(e.target.value)}
+            required
+          />
+        </div>
         <button type="submit">Add</button>
       </form>
 
       {points.length > 0 && (
-        <>
-          <h2>Points</h2>
+        <div className="points-card">
           <table>
             <thead>
               <tr><th>Date</th><th>Value</th><th></th></tr>
@@ -175,43 +180,63 @@ export default function PlotDetail() {
                 <tr key={p.id}>
                   <td>{p.date}</td>
                   <td>{p.value}</td>
-                  <td><button onClick={() => handleDeletePoint(p.id)}>Delete</button></td>
+                  <td><button className="danger" onClick={() => handleDeletePoint(p.id)}>Delete</button></td>
                 </tr>
               ))}
             </tbody>
           </table>
-        </>
+        </div>
       )}
 
       <details>
-        <summary><h2 style={{ display: 'inline' }}>Settings</h2></summary>
-        <form onSubmit={handleSaveSettings}>
-          <div>
-            <label>Name: <input value={settingsName} onChange={(e) => setSettingsName(e.target.value)} /></label>
-          </div>
-          <div>
-            <label>Y-axis label: <input value={settingsYLabel} onChange={(e) => setSettingsYLabel(e.target.value)} /></label>
-          </div>
-          <div>
-            <label>Y-axis min: <input type="number" step="any" value={settingsYMin} onChange={(e) => setSettingsYMin(e.target.value)} placeholder="Auto" /></label>
-          </div>
-          <div>
-            <label>Y-axis max: <input type="number" step="any" value={settingsYMax} onChange={(e) => setSettingsYMax(e.target.value)} placeholder="Auto" /></label>
-          </div>
-          <fieldset>
-            <legend>Reference Line</legend>
-            <div>
-              <label>Start date: <input type="date" value={settingsRefStartDate} onChange={(e) => setSettingsRefStartDate(e.target.value)} /></label>
-              <label> Value: <input type="number" step="any" value={settingsRefStartValue} onChange={(e) => setSettingsRefStartValue(e.target.value)} /></label>
+        <summary>Settings</summary>
+        <div className="settings-body">
+          <form onSubmit={handleSaveSettings}>
+            <div className="settings-grid">
+              <div>
+                <label>Name</label>
+                <input value={settingsName} onChange={(e) => setSettingsName(e.target.value)} style={{ width: '100%' }} />
+              </div>
+              <div>
+                <label>Y-axis label</label>
+                <input value={settingsYLabel} onChange={(e) => setSettingsYLabel(e.target.value)} style={{ width: '100%' }} />
+              </div>
+              <div>
+                <label>Y-axis min</label>
+                <input type="number" step="any" value={settingsYMin} onChange={(e) => setSettingsYMin(e.target.value)} placeholder="Auto" style={{ width: '100%' }} />
+              </div>
+              <div>
+                <label>Y-axis max</label>
+                <input type="number" step="any" value={settingsYMax} onChange={(e) => setSettingsYMax(e.target.value)} placeholder="Auto" style={{ width: '100%' }} />
+              </div>
             </div>
-            <div>
-              <label>End date: <input type="date" value={settingsRefEndDate} onChange={(e) => setSettingsRefEndDate(e.target.value)} /></label>
-              <label> Value: <input type="number" step="any" value={settingsRefEndValue} onChange={(e) => setSettingsRefEndValue(e.target.value)} /></label>
+            <fieldset>
+              <legend>Reference Line</legend>
+              <div className="settings-grid">
+                <div>
+                  <label>Start date</label>
+                  <input type="date" value={settingsRefStartDate} onChange={(e) => setSettingsRefStartDate(e.target.value)} style={{ width: '100%' }} />
+                </div>
+                <div>
+                  <label>Start value</label>
+                  <input type="number" step="any" value={settingsRefStartValue} onChange={(e) => setSettingsRefStartValue(e.target.value)} style={{ width: '100%' }} />
+                </div>
+                <div>
+                  <label>End date</label>
+                  <input type="date" value={settingsRefEndDate} onChange={(e) => setSettingsRefEndDate(e.target.value)} style={{ width: '100%' }} />
+                </div>
+                <div>
+                  <label>End value</label>
+                  <input type="number" step="any" value={settingsRefEndValue} onChange={(e) => setSettingsRefEndValue(e.target.value)} style={{ width: '100%' }} />
+                </div>
+              </div>
+              <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: 0 }}>Clear all 4 fields to remove the reference line.</p>
+            </fieldset>
+            <div style={{ marginTop: 16 }}>
+              <button type="submit">Save Settings</button>
             </div>
-            <p><small>Clear all 4 fields to remove the reference line.</small></p>
-          </fieldset>
-          <button type="submit">Save Settings</button>
-        </form>
+          </form>
+        </div>
       </details>
     </div>
   )

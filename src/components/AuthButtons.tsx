@@ -5,12 +5,12 @@ export default function AuthButtons() {
 
   if (isAuthenticated) {
     return (
-      <span>
-        {user?.email}{' '}
+      <>
+        <span>{user?.email}</span>
         <button onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
           Log out
         </button>
-      </span>
+      </>
     )
   }
 

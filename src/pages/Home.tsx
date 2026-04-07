@@ -59,17 +59,21 @@ export default function Home() {
 
   return (
     <div>
-      <h1>My Plots</h1>
-      <button onClick={handleCreate}>Create Plot</button>
+      <div className="home-header">
+        <h1>My Plots</h1>
+        <button onClick={handleCreate}>+ New Plot</button>
+      </div>
       {plots.length === 0 ? (
-        <p>No plots yet. Create one to get started.</p>
+        <div className="empty-state">No plots yet. Create one to get started.</div>
       ) : (
-        <ul>
+        <ul className="plot-list">
           {plots.map((p) => (
             <li key={p.id}>
-              <Link to={`/plot/${p.id}`}>{p.name}</Link>
-              {p.y_axis_label && <span> ({p.y_axis_label})</span>}
-              <button onClick={() => handleDelete(p.id, p.name)} style={{ marginLeft: 8 }}>
+              <div className="plot-info">
+                <Link to={`/plot/${p.id}`} className="plot-name">{p.name}</Link>
+                {p.y_axis_label && <span className="plot-label">{p.y_axis_label}</span>}
+              </div>
+              <button className="danger" onClick={() => handleDelete(p.id, p.name)}>
                 Delete
               </button>
             </li>
