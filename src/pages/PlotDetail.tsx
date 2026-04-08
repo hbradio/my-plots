@@ -20,6 +20,7 @@ interface Plot {
   ref_start_value: number | null
   ref_end_date: string | null
   ref_end_value: number | null
+  ref_interpolation: string | null
   points: Point[]
 }
 
@@ -39,6 +40,7 @@ export default function PlotDetail() {
   const [settingsRefStartValue, setSettingsRefStartValue] = useState('')
   const [settingsRefEndDate, setSettingsRefEndDate] = useState('')
   const [settingsRefEndValue, setSettingsRefEndValue] = useState('')
+  const [settingsRefInterpolation, setSettingsRefInterpolation] = useState('')
 
   const loadPlot = async () => {
     try {
@@ -52,6 +54,7 @@ export default function PlotDetail() {
       setSettingsRefStartValue(data.ref_start_value != null ? String(data.ref_start_value) : '')
       setSettingsRefEndDate(data.ref_end_date || '')
       setSettingsRefEndValue(data.ref_end_value != null ? String(data.ref_end_value) : '')
+      setSettingsRefInterpolation(data.ref_interpolation || '')
       // Default value field to the most recent point's value
       const pts = data.points || []
       if (pts.length > 0) {
@@ -117,6 +120,7 @@ export default function PlotDetail() {
       update.ref_start_value = Number(settingsRefStartValue)
       update.ref_end_date = settingsRefEndDate
       update.ref_end_value = Number(settingsRefEndValue)
+      update.ref_interpolation = settingsRefInterpolation || ''
     }
 
     try {
@@ -150,6 +154,7 @@ export default function PlotDetail() {
           refStartValue={plot.ref_start_value}
           refEndDate={plot.ref_end_date}
           refEndValue={plot.ref_end_value}
+          refInterpolation={plot.ref_interpolation}
         />
       </div>
 
@@ -232,6 +237,16 @@ export default function PlotDetail() {
                 <div>
                   <label>End value</label>
                   <input type="number" step="any" value={settingsRefEndValue} onChange={(e) => setSettingsRefEndValue(e.target.value)} style={{ width: '100%' }} />
+                </div>
+              </div>
+              <div className="settings-grid">
+                <div>
+                  <label>Interpolation</label>
+                  <select value={settingsRefInterpolation} onChange={(e) => setSettingsRefInterpolation(e.target.value)} style={{ width: '100%' }}>
+                    <option value="">None</option>
+                    <option value="day">Day</option>
+                    <option value="month">Month</option>
+                  </select>
                 </div>
               </div>
               <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: 0 }}>Clear all 4 fields to remove the reference line.</p>

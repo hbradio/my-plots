@@ -13,6 +13,44 @@ interface PlotChartProps {
   refStartValue?: number | null
   refEndDate?: string | null
   refEndValue?: number | null
+  refInterpolation?: string | null
+}
+
+function interpolateRefLine(
+  startDate: string,
+  startValue: number,
+  endDate: string,
+  endValue: number,
+  mode: string,
+): { x: string; y: number }[] {
+  const start = new Date(startDate)
+  const end = new Date(endDate)
+  const totalMs = end.getTime() - start.getTime()
+  if (totalMs <= 0) return [{ x: startDate, y: startValue }, { x: endDate, y: endValue }]
+
+  const points: { x: string; y: number }[] = []
+  const current = new Date(start)
+
+  while (current <= end) {
+    const elapsed = current.getTime() - start.getTime()
+    const t = elapsed / totalMs
+    const y = startValue + t * (endValue - startValue)
+    points.push({ x: current.toISOString().slice(0, 10), y: Math.round(y * 1000) / 1000 })
+
+    if (mode === 'day') {
+      current.setDate(current.getDate() + 1)
+    } else {
+      current.setMonth(current.getMonth() + 1)
+    }
+  }
+
+  // Ensure the end point is always included
+  const lastDate = points[points.length - 1]?.x
+  if (lastDate !== endDate) {
+    points.push({ x: endDate, y: endValue })
+  }
+
+  return points
 }
 
 export default function PlotChart({
@@ -24,6 +62,7 @@ export default function PlotChart({
   refStartValue,
   refEndDate,
   refEndValue,
+  refInterpolation,
 }: PlotChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const chartRef = useRef<Chart | null>(null)
@@ -48,20 +87,37 @@ export default function PlotChart({
     ]
 
     if (refStartDate && refEndDate && refStartValue != null && refEndValue != null) {
-      datasets.push({
-        label: 'Reference Line',
-        data: [
-          { x: refStartDate, y: refStartValue },
-          { x: refEndDate, y: refEndValue },
-        ],
-        showLine: true,
-        borderColor: '#b91d47',
-        borderWidth: 2,
-        borderDash: [6, 4],
-        pointRadius: 4,
-        pointBackgroundColor: '#b91d47',
-        pointBorderColor: '#b91d47',
-      })
+      const hasInterpolation = refInterpolation === 'day' || refInterpolation === 'month'
+
+      if (hasInterpolation) {
+        const interpPoints = interpolateRefLine(refStartDate, refStartValue, refEndDate, refEndValue, refInterpolation!)
+        datasets.push({
+          label: 'Reference Line',
+          data: interpPoints,
+          showLine: true,
+          borderColor: '#b91d47',
+          borderWidth: 2,
+          borderDash: [6, 4],
+          pointRadius: 4,
+          pointBackgroundColor: '#b91d47',
+          pointBorderColor: '#b91d47',
+        })
+      } else {
+        datasets.push({
+          label: 'Reference Line',
+          data: [
+            { x: refStartDate, y: refStartValue },
+            { x: refEndDate, y: refEndValue },
+          ],
+          showLine: true,
+          borderColor: '#b91d47',
+          borderWidth: 2,
+          borderDash: [6, 4],
+          pointRadius: 4,
+          pointBackgroundColor: '#b91d47',
+          pointBorderColor: '#b91d47',
+        })
+      }
     }
 
     const fontFamily = "'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif"
@@ -102,7 +158,7 @@ export default function PlotChart({
       chartRef.current?.destroy()
       chartRef.current = null
     }
-  }, [points, yAxisLabel, yMin, yMax, refStartDate, refStartValue, refEndDate, refEndValue])
+  }, [points, yAxisLabel, yMin, yMax, refStartDate, refStartValue, refEndDate, refEndValue, refInterpolation])
 
   return <canvas ref={canvasRef} />
 }
