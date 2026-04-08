@@ -32,6 +32,16 @@ function interpolateRefLine(
   const points: { x: string; y: number }[] = []
   const current = new Date(start)
 
+  // For month mode, add the start point then snap to the 1st of the next month
+  if (mode === 'month' && current.getDate() !== 1) {
+    const elapsed = current.getTime() - start.getTime()
+    const t = elapsed / totalMs
+    const y = startValue + t * (endValue - startValue)
+    points.push({ x: current.toISOString().slice(0, 10), y: Math.round(y * 1000) / 1000 })
+    current.setMonth(current.getMonth() + 1)
+    current.setDate(1)
+  }
+
   while (current <= end) {
     const elapsed = current.getTime() - start.getTime()
     const t = elapsed / totalMs
