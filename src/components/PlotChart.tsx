@@ -33,13 +33,13 @@ function interpolateRefLine(
   const current = new Date(start)
 
   // For month mode, add the start point then snap to the 1st of the next month
-  if (mode === 'month' && current.getDate() !== 1) {
+  if (mode === 'month' && current.getUTCDate() !== 1) {
     const elapsed = current.getTime() - start.getTime()
     const t = elapsed / totalMs
     const y = startValue + t * (endValue - startValue)
     points.push({ x: current.toISOString().slice(0, 10), y: Math.round(y * 1000) / 1000 })
-    current.setMonth(current.getMonth() + 1)
-    current.setDate(1)
+    current.setUTCMonth(current.getUTCMonth() + 1)
+    current.setUTCDate(1)
   }
 
   while (current <= end) {
@@ -49,9 +49,9 @@ function interpolateRefLine(
     points.push({ x: current.toISOString().slice(0, 10), y: Math.round(y * 1000) / 1000 })
 
     if (mode === 'day') {
-      current.setDate(current.getDate() + 1)
+      current.setUTCDate(current.getUTCDate() + 1)
     } else {
-      current.setMonth(current.getMonth() + 1)
+      current.setUTCMonth(current.getUTCMonth() + 1)
     }
   }
 
