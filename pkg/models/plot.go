@@ -19,6 +19,7 @@ type Plot struct {
 	RefEndDate    *string  `json:"ref_end_date"`
 	RefEndValue       *float64 `json:"ref_end_value"`
 	RefInterpolation  *string  `json:"ref_interpolation"`
+	XAxisUnit         *string  `json:"x_axis_unit"`
 	CreatedAt         string   `json:"created_at"`
 	UpdatedAt     string   `json:"updated_at"`
 	Points        []Point  `json:"points,omitempty"`
@@ -28,7 +29,7 @@ func ListPlots(db *sql.DB, userID string) ([]Plot, error) {
 	rows, err := db.Query(
 		`SELECT id, user_id, name, y_axis_label, y_min, y_max,
 		        ref_start_date, ref_start_value, ref_end_date, ref_end_value,
-		        ref_interpolation, created_at, updated_at
+		        ref_interpolation, x_axis_unit, created_at, updated_at
 		 FROM plots WHERE user_id = $1 ORDER BY created_at DESC`, userID,
 	)
 	if err != nil {
@@ -43,7 +44,7 @@ func ListPlots(db *sql.DB, userID string) ([]Plot, error) {
 		var createdAt, updatedAt time.Time
 		err := rows.Scan(&p.ID, &p.UserID, &p.Name, &p.YAxisLabel,
 			&p.YMin, &p.YMax, &refStartDate, &p.RefStartValue,
-			&refEndDate, &p.RefEndValue, &p.RefInterpolation, &createdAt, &updatedAt)
+			&refEndDate, &p.RefEndValue, &p.RefInterpolation, &p.XAxisUnit, &createdAt, &updatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -69,11 +70,11 @@ func GetPlot(db *sql.DB, plotID, userID string) (*Plot, error) {
 	err := db.QueryRow(
 		`SELECT id, user_id, name, y_axis_label, y_min, y_max,
 		        ref_start_date, ref_start_value, ref_end_date, ref_end_value,
-		        ref_interpolation, created_at, updated_at
+		        ref_interpolation, x_axis_unit, created_at, updated_at
 		 FROM plots WHERE id = $1 AND user_id = $2`, plotID, userID,
 	).Scan(&p.ID, &p.UserID, &p.Name, &p.YAxisLabel,
 		&p.YMin, &p.YMax, &refStartDate, &p.RefStartValue,
-		&refEndDate, &p.RefEndValue, &p.RefInterpolation, &createdAt, &updatedAt)
+		&refEndDate, &p.RefEndValue, &p.RefInterpolation, &p.XAxisUnit, &createdAt, &updatedAt)
 	if err != nil {
 		return nil, err
 	}
@@ -104,11 +105,11 @@ func CreatePlot(db *sql.DB, userID, name, yAxisLabel string) (*Plot, error) {
 		 VALUES ($1, $2, $3)
 		 RETURNING id, user_id, name, y_axis_label, y_min, y_max,
 		           ref_start_date, ref_start_value, ref_end_date, ref_end_value,
-		           ref_interpolation, created_at, updated_at`,
+		           ref_interpolation, x_axis_unit, created_at, updated_at`,
 		userID, name, yAxisLabel,
 	).Scan(&p.ID, &p.UserID, &p.Name, &p.YAxisLabel,
 		&p.YMin, &p.YMax, &p.RefStartDate, &p.RefStartValue,
-		&p.RefEndDate, &p.RefEndValue, &p.RefInterpolation, &createdAt, &updatedAt)
+		&p.RefEndDate, &p.RefEndValue, &p.RefInterpolation, &p.XAxisUnit, &createdAt, &updatedAt)
 	if err != nil {
 		return nil, err
 	}
@@ -131,6 +132,7 @@ type PlotUpdate struct {
 	RefEndValue   *float64 `json:"ref_end_value"`
 	ClearRef         bool    `json:"clear_ref"`
 	RefInterpolation *string `json:"ref_interpolation"`
+	XAxisUnit        *string `json:"x_axis_unit"`
 }
 
 func UpdatePlot(db *sql.DB, userID string, update PlotUpdate) (*Plot, error) {
@@ -169,6 +171,15 @@ func UpdatePlot(db *sql.DB, userID string, update PlotUpdate) (*Plot, error) {
 		} else {
 			sets = append(sets, fmt.Sprintf("ref_interpolation = $%d", argIdx))
 			args = append(args, *update.RefInterpolation)
+			argIdx++
+		}
+	}
+	if update.XAxisUnit != nil {
+		if *update.XAxisUnit == "" {
+			sets = append(sets, "x_axis_unit = NULL")
+		} else {
+			sets = append(sets, fmt.Sprintf("x_axis_unit = $%d", argIdx))
+			args = append(args, *update.XAxisUnit)
 			argIdx++
 		}
 	}

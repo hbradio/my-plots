@@ -14,6 +14,7 @@ interface PlotChartProps {
   refEndDate?: string | null
   refEndValue?: number | null
   refInterpolation?: string | null
+  xAxisUnit?: string | null
 }
 
 function interpolateRefLine(
@@ -63,6 +64,7 @@ export default function PlotChart({
   refEndDate,
   refEndValue,
   refInterpolation,
+  xAxisUnit,
 }: PlotChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const chartRef = useRef<Chart | null>(null)
@@ -138,7 +140,7 @@ export default function PlotChart({
         scales: {
           x: {
             type: 'time',
-            time: { unit: 'day', tooltipFormat: 'yyyy-MM-dd' },
+            time: { ...(xAxisUnit === 'day' || xAxisUnit === 'month' ? { unit: xAxisUnit } : {}), tooltipFormat: 'yyyy-MM-dd' },
             title: { display: true, text: 'Date', font: { family: fontFamily, weight: 'bold', size: 14 }, color: '#777' },
             ticks: { font: { family: fontFamily, weight: 'bold', size: 12 }, color: '#999' },
             grid: { color: '#eee' },
@@ -158,7 +160,7 @@ export default function PlotChart({
       chartRef.current?.destroy()
       chartRef.current = null
     }
-  }, [points, yAxisLabel, yMin, yMax, refStartDate, refStartValue, refEndDate, refEndValue, refInterpolation])
+  }, [points, yAxisLabel, yMin, yMax, refStartDate, refStartValue, refEndDate, refEndValue, refInterpolation, xAxisUnit])
 
   return <canvas ref={canvasRef} />
 }

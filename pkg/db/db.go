@@ -58,6 +58,7 @@ func migrate(db *sql.DB) error {
 			updated_at TIMESTAMPTZ DEFAULT now()
 		)`,
 		`ALTER TABLE plots ADD COLUMN IF NOT EXISTS ref_interpolation TEXT`,
+		`ALTER TABLE plots ADD COLUMN IF NOT EXISTS x_axis_unit TEXT`,
 		`CREATE TABLE IF NOT EXISTS points (
 			id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
 			plot_id UUID REFERENCES plots(id) ON DELETE CASCADE,

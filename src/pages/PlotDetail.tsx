@@ -21,6 +21,7 @@ interface Plot {
   ref_end_date: string | null
   ref_end_value: number | null
   ref_interpolation: string | null
+  x_axis_unit: string | null
   points: Point[]
 }
 
@@ -41,6 +42,7 @@ export default function PlotDetail() {
   const [settingsRefEndDate, setSettingsRefEndDate] = useState('')
   const [settingsRefEndValue, setSettingsRefEndValue] = useState('')
   const [settingsRefInterpolation, setSettingsRefInterpolation] = useState('')
+  const [settingsXAxisUnit, setSettingsXAxisUnit] = useState('')
 
   const loadPlot = async () => {
     try {
@@ -55,6 +57,7 @@ export default function PlotDetail() {
       setSettingsRefEndDate(data.ref_end_date || '')
       setSettingsRefEndValue(data.ref_end_value != null ? String(data.ref_end_value) : '')
       setSettingsRefInterpolation(data.ref_interpolation || '')
+      setSettingsXAxisUnit(data.x_axis_unit || '')
       // Default value field to the most recent point's value
       const pts = data.points || []
       if (pts.length > 0) {
@@ -112,6 +115,8 @@ export default function PlotDetail() {
       update.y_max = Number(settingsYMax)
     }
 
+    update.x_axis_unit = settingsXAxisUnit || ''
+
     const hasRef = settingsRefStartDate && settingsRefStartValue !== '' && settingsRefEndDate && settingsRefEndValue !== ''
     if (!hasRef) {
       update.clear_ref = true
@@ -155,6 +160,7 @@ export default function PlotDetail() {
           refEndDate={plot.ref_end_date}
           refEndValue={plot.ref_end_value}
           refInterpolation={plot.ref_interpolation}
+          xAxisUnit={plot.x_axis_unit}
         />
       </div>
 
@@ -217,6 +223,14 @@ export default function PlotDetail() {
               <div>
                 <label>Y-axis max</label>
                 <input type="number" step="any" value={settingsYMax} onChange={(e) => setSettingsYMax(e.target.value)} placeholder="Auto" style={{ width: '100%' }} />
+              </div>
+              <div>
+                <label>X-axis ticks</label>
+                <select value={settingsXAxisUnit} onChange={(e) => setSettingsXAxisUnit(e.target.value)} style={{ width: '100%' }}>
+                  <option value="">Auto</option>
+                  <option value="day">Day</option>
+                  <option value="month">Month</option>
+                </select>
               </div>
             </div>
             <fieldset>
