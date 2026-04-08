@@ -28,7 +28,7 @@ export default function PlotDetail() {
   const { fetchWithAuth } = useApi()
   const [plot, setPlot] = useState<Plot | null>(null)
   const [loading, setLoading] = useState(true)
-  const [newDate, setNewDate] = useState('')
+  const [newDate, setNewDate] = useState(() => new Date().toISOString().slice(0, 10))
   const [newValue, setNewValue] = useState('')
 
   const [settingsName, setSettingsName] = useState('')
