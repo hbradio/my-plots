@@ -140,12 +140,7 @@ export default function PlotChart({
       options: {
         responsive: true,
         plugins: {
-          legend: {
-            labels: {
-              font: { family: fontFamily, weight: 'bold', size: 13 },
-              color: '#777',
-            },
-          },
+          legend: { display: false },
         },
         scales: {
           x: {
