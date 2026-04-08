@@ -52,6 +52,11 @@ export default function PlotDetail() {
       setSettingsRefStartValue(data.ref_start_value != null ? String(data.ref_start_value) : '')
       setSettingsRefEndDate(data.ref_end_date || '')
       setSettingsRefEndValue(data.ref_end_value != null ? String(data.ref_end_value) : '')
+      // Default value field to the most recent point's value
+      const pts = data.points || []
+      if (pts.length > 0) {
+        setNewValue(String(pts[pts.length - 1].value))
+      }
     } catch (err) {
       console.error('Failed to load plot:', err)
     } finally {
@@ -71,8 +76,7 @@ export default function PlotDetail() {
         method: 'POST',
         body: JSON.stringify({ plot_id: id, date: newDate, value: Number(newValue) }),
       })
-      setNewDate('')
-      setNewValue('')
+      setNewDate(new Date().toISOString().slice(0, 10))
       loadPlot()
     } catch (err) {
       alert('Failed to add point: ' + err)
